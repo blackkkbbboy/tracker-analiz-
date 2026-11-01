@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xarajat Treker</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-hover: #273449;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --green: #10b981;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --accent: #8b5cf6;
+    --border: #334155;
+    --radius: 16px;
+  }
+
+  body {
+    background: radial-gradient(circle at 20% 0%, #1e293b 0%, var(--bg) 60%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: clamp(12px, 3vw, 40px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    transition: background .4s;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 2vw, 24px);
+    animation: fadeUp .6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  header h1 {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    background: linear-gradient(135deg, var(--green), var(--blue), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: .85rem;
+    transition: .25s;
+  }
+  .reset-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+    transform: translateY(-2px);
+  }
+
+  /* Balans kartalari */
+  .balance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: clamp(10px, 2vw, 16px);
+  }
+
+  .balance-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(14px, 2.5vw, 22px);
+    position: relative;
+    overflow: hidden;
+    transition: .3s;
+  }
+  .balance-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(255,255,255,.04));
+    pointer-events: none;
+  }
+  .balance-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--muted);
+    box-shadow: 0 12px 30px rgba(0,0,0,.4);
+  }
+  .balance-card .label {
+    font-size: .78rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .balance-card .value {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    font-weight: 700;
+    transition: .3s;
+  }
+  .value.green { color: var(--green); }
+  .value.red { color: var(--red); }
+  .value.blue { color: var(--blue); }
+
+  /* Forma */
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(14px, 2.5vw, 24px);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 560px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .input-group label {
+    font-size: .78rem;
+    color: var(--muted);
+    letter-spacing: .3px;
+  }
+
+  input, select {
+    background: #0f1a2e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: .95rem;
+    outline: none;
+    transition: .25s;
+    width: 100%;
+  }
+  input:focus, select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    background: #101d33;
+  }
+
+  .type-toggle {
+    display: flex;
+    background: #0f1a2e;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .type-toggle button {
+    flex: 1;
+    padding: 11px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 600;
+    transition: .25s;
+  }
+  .type-toggle button.active.income {
+    background: rgba(16,185,129,.15);
+    color: var(--green);
+  }
+  .type-toggle button.active.expense {
+    background: rgba(239,68,68,.15);
+    color: var(--red);
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139,92,246,.4);
+  }
+  .submit-btn:active { transform: scale(.98); }
+
+  /* Filtr */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: .82rem;
+    cursor: pointer;
+    transition: .25s;
+  }
+  .filter-chip:hover { color: var(--text); border-color: var(--muted); }
+  .filter-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Ro'yxat */
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .list-header h2 {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-weight: 700;
+  }
+  .list-header .count {
+    font-size: .78rem;
+    color: var(--muted);
+    background: var(--card);
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+
+  .transactions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .transaction {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid transparent;
+    padding: clamp(10px, 2vw, 16px);
+    border-radius: 12px;
+    transition: .3s;
+    animation: slideIn .35s ease both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .transaction:hover {
+    background: var(--card-hover);
+    transform: translateX(4px);
+  }
+  .transaction.income { border-left-color: var(--green); }
+  .transaction.expense { border-left-color: var(--red); }
+
+  .transaction .icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    background: #0f1a2e;
+    transition: .3s;
+  }
+  .transaction:hover .icon { transform: scale(1.08) rotate(-4deg); }
+
+  .transaction .info {
+    flex: 1;
+    min-width: 0;
+  }
+  .transaction .info .cat {
+    font-weight: 600;
+    font-size: .95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .transaction .info .desc {
+    font-size: .78rem;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .transaction .amount {
+    font-weight: 700;
+    font-size: clamp(.9rem, 2vw, 1.05rem);
+    white-space: nowrap;
+  }
+  .amount.income { color: var(--green); }
+  .amount.expense { color: var(--red); }
+
+  .del-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 6px;
+    border-radius: 8px;
+    transition: .2s;
+    opacity: .6;
+  }
+  .del-btn:hover {
+    color: var(--red);
+    background: rgba(239,68,68,.1);
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    font-size: .95rem;
+    animation: fadeUp .4s ease both;
+  }
+  .empty .emoji {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 10px;
+    animation: float 2.5s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Kategoriya statistikasi */
+  .stats {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(14px, 2.5vw, 22px);
+  }
+  .stats h3 {
+    font-size: .95rem;
+    margin-bottom: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .stat-row .name {
+    width: 100px;
+    min-width: 80px;
+    font-size: .85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .stat-bar-wrap {
+    flex: 1;
+    height: 10px;
+    background: #0f1a2e;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .stat-bar {
+    height: 100%;
+    border-radius: 999px;
+    width: 0;
+    transition: width .8s cubic-bezier(.22,1,.36,1);
+  }
+  .stat-row .val {
+    font-size: .8rem;
+    color: var(--muted);
+    min-width: 80px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: .9rem;
+    box-shadow: 0 12px 40px rgba(0,0,0,.6);
+    opacity: 0;
+    transition: .35s cubic-bezier(.22,1,.36,1);
+    z-index: 100;
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <h1>💰 Xarajat Treker</h1>
+    <button class="reset-btn" id="resetBtn">🗑 Hammasini tozalash</button>
+  </header>
+
+  <!-- Balans -->
+  <div class="balance-grid">
+    <div class="balance-card">
+      <div class="label">💵 Kirim</div>
+      <div class="value green" id="totalIncome">0 so'm</div>
+    </div>
+    <div class="balance-card">
+      <div class="label">💸 Chiqim</div>
+      <div class="value red" id="totalExpense">0 so'm</div>
+    </div>
+    <div class="balance-card">
+      <div class="label">📊 Balans</div>
+      <div class="value blue" id="balance">0 so'm</div>
+    </div>
+  </div>
+
+  <!-- Forma -->
+  <div class="form-card">
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Summa</label>
+        <input type="number" id="amount" placeholder="0" min="0" step="any">
+      </div>
+      <div class="input-group">
+        <label>Kategoriya</label>
+        <select id="category">
+          <option value="Oziq-ovqat">🍔 Oziq-ovqat</option>
+          <option value="Transport">🚌 Transport</option>
+          <option value="Uy-joy">🏠 Uy-joy</option>
+          <option value="Kiyim">👕 Kiyim</option>
+          <option value="Sog'liq">💊 Sog'liq</option>
+          <option value="Ta'lim">📚 Ta'lim</option>
+          <option value="Ko'ngilochar">🎮 Ko'ngilochar</option>
+          <option value="Ish haqi">💼 Ish haqi</option>
+          <option value="Sovg'a">🎁 Sovg'a</option>
+          <option value="Boshqa">📦 Boshqa</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Turi</label>
+        <div class="type-toggle">
+          <button class="active expense" id="typeExpense" data-type="expense">Chiqim</button>
+          <button class="income" id="typeIncome" data-type="income">Kirim</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Izoh (ixtiyoriy)</label>
+        <input type="text" id="desc" placeholder="Masalan: tushlik">
+      </div>
+    </div>
+    <button class="submit-btn" id="addBtn">➕ Qo'shish</button>
+  </div>
+
+  <!-- Filtr -->
+  <div class="filters">
+    <button class="filter-chip active" data-filter="all">Hammasi</button>
+    <button class="filter-chip" data-filter="income">Kirim</button>
+    <button class="filter-chip" data-filter="expense">Chiqim</button>
+  </div>
+
+  <!-- Statistika -->
+  <div class="stats" id="statsCard" style="display:none">
+    <h3>📈 Kategoriyalar bo'yicha chiqim</h3>
+    <div id="statList"></div>
+  </div>
+
+  <!-- Ro'yxat -->
+  <div>
+    <div class="list-header">
+      <h2>Tranzaksiyalar</h2>
+      <span class="count" id="count">0 ta</span>
+    </div>
+    <div class="transactions" id="list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'xarajat_treker_v1';
+  let transactions = [];
+  let currentType = 'expense';
+  let currentFilter = 'all';
+
+  const $ = id => document.getElementById(id);
+
+  const fmt = n => new Intl.NumberFormat('uz-UZ').format(n) + " so'm";
+
+  const icons = {
+    "Oziq-ovqat": "🍔", "Transport": "🚌", "Uy-joy": "🏠", "Kiyim": "👕",
+    "Sog'liq": "💊", "Ta'lim": "📚", "Ko'ngilochar": "🎮", "Ish haqi": "💼",
+    "Sovg'a": "🎁", "Boshqa": "📦"
+  };
+
+  const colors = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#ef4444','#84cc16','#f97316','#6366f1'];
+
+  // ---- Storage ----
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) transactions = JSON.parse(raw);
+    } catch(e) { transactions = []; }
+  }
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+  }
+
+  // ---- Toast ----
+  let toastTimer;
+  function toast(msg, type = 'success') {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.className = 'toast ' + type, 2500);
+  }
+
+  // ---- Render ----
+  function render() {
+    // Balans
+    const income = transactions.filter(t => t.type === 'income').reduce((s,t) => s + t.amount, 0);
+    const expense = transactions.filter(t => t.type === 'expense').reduce((s,t) => s + t.amount, 0);
+    $('totalIncome').textContent = fmt(income);
+    $('totalExpense').textContent = fmt(expense);
+    $('balance').textContent = fmt(income - expense);
+
+    // Filtrlangan ro'yxat
+    const filtered = currentFilter === 'all'
+      ? transactions
+      : transactions.filter(t => t.type === currentFilter);
+
+    const list = $('list');
+    list.innerHTML = '';
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty"><span class="emoji">📭</span>Hozircha tranzaksiya yo'q</div>`;
+    } else {
+      [...filtered].reverse().forEach((t, i) => {
+        const div = document.createElement('div');
+        div.className = 'transaction ' + t.type;
+        div.style.animationDelay = (i * 0.04) + 's';
+        div.innerHTML = `
+          <div class="icon">${icons[t.category] || '📦'}</div>
+          <div class="info">
+            <div class="cat">${t.category}</div>
+            <div class="desc">${t.desc ? escapeHtml(t.desc) : new Date(t.date).toLocaleDateString('uz-UZ')}</div>
+          </div>
+          <div class="amount ${t.type}">${t.type === 'income' ? '+' : '−'}${fmt(t.amount)}</div>
+          <button class="del-btn" data-id="${t.id}" title="O'chirish">✕</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    $('count').textContent = filtered.length + ' ta';
+
+    // O'chirish tugmalari
+    list.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', () => removeTransaction(btn.dataset.id));
+    });
+
+    renderStats();
+  }
+
+  function escapeHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderStats() {
+    const exp = transactions.filter(t => t.type === 'expense');
+    const card = $('statsCard');
+    if (exp.length === 0) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const byCat = {};
+    exp.forEach(t => { byCat[t.category] = (byCat[t.category] || 0) + t.amount; });
+    const max = Math.max(...Object.values(byCat));
+    const entries = Object.entries(byCat).sort((a,b) => b[1] - a[1]);
+
+    const wrap = $('statList');
+    wrap.innerHTML = '';
+    entries.forEach(([cat, val], idx) => {
+      const pct = max > 0 ? (val / max) * 100 : 0;
+      const color = colors[idx % colors.length];
+      const row = document.createElement('div');
+      row.className = 'stat-row';
+      row.innerHTML = `
+        <div class="name">${icons[cat] || '📦'} ${cat}</div>
+        <div class="stat-bar-wrap"><div class="stat-bar" style="background:${color}"></div></div>
+        <div class="val">${fmt(val)}</div>
+      `;
+      wrap.appendChild(row);
+      requestAnimationFrame(() => {
+        setTimeout(() => row.querySelector('.stat-bar').style.width = pct + '%', 50);
+      });
+    });
+  }
+
+  // ---- Actions ----
+  function addTransaction() {
+    const amount = parseFloat($('amount').value);
+    const category = $('category').value;
+    const desc = $('desc').value.trim();
+
+    if (!amount || amount <= 0) {
+      toast("Iltimos, to'g'ri summa kiriting!", 'error');
+      $('amount').focus();
+      return;
+    }
+
+    const t = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      amount,
+      category,
+      desc,
+      type: currentType,
+      date: Date.now()
+    };
+
+    transactions.push(t);
+    save();
+    render();
+
+    $('amount').value = '';
+    $('desc').value = '';
+    $('amount').focus();
+
+    toast(currentType === 'income' ? '✅ Kirim qo\'shildi' : '✅ Chiqim qo\'shildi', 'success');
+  }
+
+  function removeTransaction(id) {
+    transactions = transactions.filter(t => t.id !== id);
+    save();
+    render();
+    toast('🗑 O\'chirildi', 'success');
+  }
+
+  // ---- Event listeners ----
+  $('addBtn').addEventListener('click', addTransaction);
+
+  $('amount').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTransaction();
+  });
+  $('desc').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTransaction();
+  });
+
+  // Tur toggle
+  document.querySelectorAll('.type-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentType = btn.dataset.type;
+      document.querySelectorAll('.type-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      btn.classList.add(currentType);
+    });
+  });
+
+  // Filtr
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      currentFilter = chip.dataset.filter;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      render();
+    });
+  });
+
+  // Reset
+  $('resetBtn').addEventListener('click', () => {
+    if (transactions.length === 0) return toast('Ro\'yxat allaqachon bo\'sh', 'error');
+    if (confirm('Barcha tranzaksiyalarni o\'chirmoqchimisiz?')) {
+      transactions = [];
+      save();
+      render();
+      toast('🗑 Hammasi tozalandi', 'success');
+    }
+  });
+
+  // ---- Start ----
+  load();
+  render();
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xarajat Treker</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,-apple-system,sans-serif; }
+  :root {
+    --bg:#0f172a; --card:#1e293b; --card-hover:#273449; --text:#e2e8f0; --muted:#94a3b8;
+    --green:#10b981; --red:#ef4444; --blue:#3b82f6; --accent:#8b5cf6; --border:#334155; --radius:16px;
+  }
+  body {
+    background:radial-gradient(circle at 20% 0%, #1e293b 0%, var(--bg) 60%);
+    color:var(--text); min-height:100vh; padding:clamp(12px,3vw,40px);
+    display:flex; justify-content:center; align-items:flex-start;
+  }
+  .app { width:100%; max-width:1100px; display:flex; flex-direction:column; gap:clamp(14px,2vw,24px); animation:fadeUp .6s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  header h1 {
+    font-size:clamp(1.3rem,3vw,2rem);
+    background:linear-gradient(135deg,var(--green),var(--blue),var(--accent));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    font-weight:800; letter-spacing:-0.5px;
+  }
+  .header-right { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .currency-toggle { display:flex; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .currency-toggle button { padding:8px 14px; border:none; background:transparent; color:var(--muted); font-size:.82rem; font-weight:600; cursor:pointer; transition:.25s; }
+  .currency-toggle button.active { background:var(--accent); color:#fff; }
+  .rate-info { font-size:.7rem; color:var(--muted); padding:4px 8px; border-radius:6px; background:var(--card); border:1px solid var(--border); white-space:nowrap; }
+  .reset-btn { background:transparent; border:1px solid var(--border); color:var(--muted); padding:8px 16px; border-radius:10px; cursor:pointer; font-size:.85rem; transition:.25s; }
+  .reset-btn:hover { border-color:var(--red); color:var(--red); transform:translateY(-2px); }
+
+  .period-tabs { display:flex; gap:6px; background:var(--card); padding:6px; border-radius:14px; border:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
+  .period-tabs::-webkit-scrollbar { display:none; }
+  .period-tab { flex:1; min-width:70px; padding:10px 14px; border:none; background:transparent; color:var(--muted); font-size:.85rem; font-weight:600; border-radius:10px; cursor:pointer; transition:.25s; white-space:nowrap; }
+  .period-tab:hover { color:var(--text); background:rgba(255,255,255,.04); }
+  .period-tab.active { background:linear-gradient(135deg,var(--blue),var(--accent)); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,.35); }
+
+  .sub-filter { display:flex; gap:8px; flex-wrap:wrap; animation:fadeUp .3s ease both; }
+  .sub-filter select { background:var(--card); border:1px solid var(--border); color:var(--text); padding:9px 14px; border-radius:10px; font-size:.85rem; outline:none; cursor:pointer; }
+  .period-label { font-size:.8rem; color:var(--muted); padding:9px 4px; display:flex; align-items:center; gap:6px; }
+
+  .balance-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:clamp(10px,2vw,16px); }
+  .balance-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:clamp(14px,2.5vw,22px); transition:.3s; }
+  .balance-card:hover { transform:translateY(-4px); border-color:var(--muted); box-shadow:0 12px 30px rgba(0,0,0,.4); }
+  .balance-card .label { font-size:.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .balance-card .value { font-size:clamp(1.1rem,2.5vw,1.6rem); font-weight:700; transition:.3s; }
+  .value.green { color:var(--green); } .value.red { color:var(--red); } .value.blue { color:var(--blue); }
+
+  .form-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:clamp(14px,2.5vw,24px); }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:560px) { .form-grid { grid-template-columns:1fr; } }
+  .input-group { display:flex; flex-direction:column; gap:6px; }
+  .input-group label { font-size:.78rem; color:var(--muted); }
+  input,select { background:#0f1a2e; border:1px solid var(--border); color:var(--text); padding:11px 14px; border-radius:10px; font-size:.95rem; outline:none; transition:.25s; width:100%; }
+  input:focus,select:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(.7); cursor:pointer; }
+  .type-toggle { display:flex; background:#0f1a2e; border-radius:10px; border:1px solid var(--border); overflow:hidden; }
+  .type-toggle button { flex:1; padding:11px; background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:.9rem; font-weight:600; transition:.25s; }
+  .type-toggle button.active.income { background:rgba(16,185,129,.15); color:var(--green); }
+  .type-toggle button.active.expense { background:rgba(239,68,68,.15); color:var(--red); }
+  .submit-btn { width:100%; margin-top:14px; padding:13px; border:none; border-radius:10px; background:linear-gradient(135deg,var(--blue),var(--accent)); color:#fff; font-size:1rem; font-weight:700; cursor:pointer; transition:.25s; }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(139,92,246,.4); }
+
+  .filters { display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-chip { padding:7px 14px; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:.82rem; cursor:pointer; transition:.25s; }
+  .filter-chip:hover { color:var(--text); }
+  .filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .list-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:4px; }
+  .list-header h2 { font-size:clamp(1rem,2vw,1.2rem); font-weight:700; }
+  .list-header .count { font-size:.78rem; color:var(--muted); background:var(--card); padding:4px 12px; border-radius:999px; border:1px solid var(--border); }
+
+  .transactions { display:flex; flex-direction:column; gap:10px; }
+  .day-group { display:flex; flex-direction:column; gap:10px; }
+  .day-header { font-size:.8rem; color:var(--muted); font-weight:600; padding:4px 8px; display:flex; justify-content:space-between; border-bottom:1px dashed var(--border); margin-top:6px; }
+
+  .transaction { display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--border); border-left:4px solid transparent; padding:clamp(10px,2vw,16px); border-radius:12px; transition:.3s; animation:slideIn .35s ease both; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
+  .transaction:hover { background:var(--card-hover); transform:translateX(4px); }
+  .transaction.income { border-left-color:var(--green); }
+  .transaction.expense { border-left-color:var(--red); }
+  .transaction .icon { width:42px; height:42px; min-width:42px; border-radius:12px; display:grid; place-items:center; font-size:1.2rem; background:#0f1a2e; }
+  .transaction .info { flex:1; min-width:0; }
+  .transaction .info .cat { font-weight:600; font-size:.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .transaction .info .desc { font-size:.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .transaction .amount { font-weight:700; font-size:clamp(.9rem,2vw,1.05rem); white-space:nowrap; }
+  .amount.income { color:var(--green); } .amount.expense { color:var(--red); }
+  .del-btn { background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:1.1rem; padding:6px; border-radius:8px; transition:.2s; opacity:.6; }
+  .del-btn:hover { color:var(--red); background:rgba(239,68,68,.1); opacity:1; }
+
+  .empty { text-align:center; padding:40px 20px; color:var(--muted); border:2px dashed var(--border); border-radius:var(--radius); font-size:.95rem; }
+  .empty .emoji { font-size:2.2rem; display:block; margin-bottom:10px; }
+
+  .stats { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:clamp(14px,2.5vw,22px); }
+  .stats h3 { font-size:.95rem; margin-bottom:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .stat-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .stat-row .name { width:100px; min-width:80px; font-size:.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat-bar-wrap { flex:1; height:10px; background:#0f1a2e; border-radius:999px; overflow:hidden; }
+  .stat-bar { height:100%; border-radius:999px; width:0; transition:width .8s ease; }
+  .stat-row .val { font-size:.8rem; color:var(--muted); min-width:80px; text-align:right; }
+
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--card); border:1px solid var(--border); color:var(--text); padding:12px 24px; border-radius:12px; font-size:.9rem; box-shadow:0 12px 40px rgba(0,0,0,.6); opacity:0; transition:.35s; z-index:100; pointer-events:none; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+  .toast.success { border-color:var(--green); } .toast.error { border-color:var(--red); }
+
+  /* Byudjet */
+  .budget-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:clamp(14px,2.5vw,22px); }
+  .budget-card h3 { font-size:.95rem; margin-bottom:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .budget-input-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .budget-input-row input { width:180px; }
+  .budget-input-row button { padding:10px 18px; border:none; border-radius:10px; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; font-size:.85rem; }
+  .budget-info { margin-top:12px; font-size:.9rem; display:flex; flex-wrap:wrap; gap:16px; }
+  .budget-info span { color:var(--muted); }
+  .budget-info b { color:var(--text); }
+  .budget-bar-wrap { margin-top:10px; height:12px; background:#0f1a2e; border-radius:999px; overflow:hidden; }
+  .budget-bar { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--green),var(--blue)); width:0; transition:width .6s ease; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <h1>💰 Xarajat Treker</h1>
+    <div class="header-right">
+      <div class="currency-toggle" id="currencyToggle">
+        <button class="active" data-cur="UZS">so'm</button>
+        <button data-cur="USD">$ dollar</button>
+      </div>
+      <div class="rate-info" id="rateInfo">Kurs yuklanmoqda...</div>
+      <button class="reset-btn" id="resetBtn">🗑 Tozalash</button>
+    </div>
+  </header>
+
+  <div class="period-tabs" id="periodTabs">
+    <button class="period-tab active" data-period="day">📅 Kunlik</button>
+    <button class="period-tab" data-period="week">🗓 Haftalik</button>
+    <button class="period-tab" data-period="month">📆 Oylik</button>
+    <button class="period-tab" data-period="year">📊 Yillik</button>
+    <button class="period-tab" data-period="all">♾ Hammasi</button>
+  </div>
+
+  <div class="sub-filter" id="subFilter"></div>
+
+  <div class="balance-grid">
+    <div class="balance-card"><div class="label">💵 Kirim</div><div class="value green" id="totalIncome">0 so'm</div></div>
+    <div class="balance-card"><div class="label">💸 Chiqim</div><div class="value red" id="totalExpense">0 so'm</div></div>
+    <div class="balance-card"><div class="label">📊 Balans</div><div class="value blue" id="balance">0 so'm</div></div>
+  </div>
+
+  <!-- Oylik byudjet -->
+  <div class="budget-card" id="budgetCard">
+    <h3>🎯 Oylik byudjet</h3>
+    <div class="budget-input-row">
+      <input type="number" id="budgetInput" placeholder="Oylik limit (so'm)" min="0" step="any">
+      <button id="budgetSaveBtn">Saqlash</button>
+    </div>
+    <div class="budget-info" id="budgetInfo"></div>
+    <div class="budget-bar-wrap"><div class="budget-bar" id="budgetBar"></div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-grid">
+      <div class="input-group"><label>Summa</label><input type="number" id="amount" placeholder="0" min="0" step="any"></div>
+      <div class="input-group"><label>Kategoriya</label>
+        <select id="category">
+          <option value="Oziq-ovqat">🍔 Oziq-ovqat</option>
+          <option value="Transport">🚌 Transport</option>
+          <option value="Uy-joy">🏠 Uy-joy</option>
+          <option value="Kiyim">👕 Kiyim</option>
+          <option value="Sog'liq">💊 Sog'liq</option>
+          <option value="Ta'lim">📚 Ta'lim</option>
+          <option value="Ko'ngilochar">🎮 Ko'ngilochar</option>
+          <option value="Ish haqi">💼 Ish haqi</option>
+          <option value="Sovg'a">🎁 Sovg'a</option>
+          <option value="Boshqa">📦 Boshqa</option>
+        </select>
+      </div>
+      <div class="input-group"><label>Turi</label>
+        <div class="type-toggle" id="typeToggle">
+          <button class="active expense" data-type="expense">Chiqim</button>
+          <button class="income" data-type="income">Kirim</button>
+        </div>
+      </div>
+      <div class="input-group"><label>Sana</label><input type="date" id="date"></div>
+      <div class="input-group" style="grid-column:1/-1;"><label>Izoh (ixtiyoriy)</label><input type="text" id="desc" placeholder="Masalan: tushlik"></div>
+    </div>
+    <button class="submit-btn" id="addBtn">➕ Qo'shish</button>
+  </div>
+
+  <div class="filters" id="typeFilters">
+    <button class="filter-chip active" data-filter="all">Hammasi</button>
+    <button class="filter-chip" data-filter="income">Kirim</button>
+    <button class="filter-chip" data-filter="expense">Chiqim</button>
+  </div>
+
+  <div class="stats" id="statsCard" style="display:none">
+    <h3>📈 Kategoriyalar bo'yicha chiqim</h3>
+    <div id="statList"></div>
+  </div>
+
+  <div>
+    <div class="list-header"><h2>Tranzaksiyalar</h2><span class="count" id="count">0 ta</span></div>
+    <div class="transactions" id="list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  var STORAGE_KEY = 'xarajat_treker_v7';
+  var BUDGET_KEY = 'xarajat_budget_v7';
+  var transactions = [];
+  var monthlyBudget = 0;
+  var currentType = 'expense';
+  var currentFilter = 'all';
+  var currentPeriod = 'day';
+  var selectedMonth = null;
+  var selectedYear = null;
+  var displayCurrency = 'UZS';
+  var usdRate = null;
+  var rateLoading = false;
+
+  function $(id) { return document.getElementById(id); }
+
+  var icons = {
+    "Oziq-ovqat":"🍔","Transport":"🚌","Uy-joy":"🏠","Kiyim":"👕","Sog'liq":"💊",
+    "Ta'lim":"📚","Ko'ngilochar":"🎮","Ish haqi":"💼","Sovg'a":"🎁","Boshqa":"📦"
+  };
+  var colors = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#ef4444','#84cc16','#f97316','#6366f1'];
+  var monthNames = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+
+  // ============ VALYUTA ============
+  function fmtAmount(uzs) {
+    if (displayCurrency === 'USD' && usdRate) {
+      return '$' + (uzs / usdRate).toFixed(2);
+    }
+    return new Intl.NumberFormat('uz-UZ').format(Math.round(uzs)) + " so'm";
+  }
+
+  function updateRateInfo() {
+    if (usdRate) {
+      $('rateInfo').textContent = '1$ = ' + new Intl.NumberFormat('uz-UZ').format(Math.round(usdRate)) + " so'm";
+    } else {
+      $('rateInfo').textContent = 'Kurs yuklanmoqda...';
+    }
+  }
+
+  async function fetchRate() {
+    if (rateLoading) return;
+    rateLoading = true;
+    $('rateInfo').textContent = 'Kurs yuklanmoqda...';
+
+    var sources = [
+      async function() {
+        var r = await fetch('https://cbu.uz/ru/arkhiv-kursov-valyut/json/USD/');
+        var d = await r.json();
+        var item = Array.isArray(d) ? d[0] : d;
+        if (item && item.Rate) return parseFloat(item.Rate);
+        throw new Error('cbu');
+      },
+      async function() {
+        var r = await fetch('https://open.er-api.com/v6/latest/USD');
+        var d = await r.json();
+        if (d && d.rates && d.rates.UZS) return d.rates.UZS;
+        throw new Error('er');
+      }
+    ];
+
+    var rate = null;
+    for (var i = 0; i < sources.length; i++) {
+      try {
+        rate = await sources[i]();
+        if (rate && rate > 0) break;
+      } catch(e) {}
+    }
+
+    if (rate && rate > 0) {
+      usdRate = rate;
+    } else if (!usdRate) {
+      usdRate = 12600;
+    }
+    updateRateInfo();
+    rateLoading = false;
+    render();
+  }
+
+  // ============ STORAGE ============
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) transactions = parsed;
+      }
+      var b = localStorage.getItem(BUDGET_KEY);
+      if (b) monthlyBudget = parseFloat(b) || 0;
+    } catch(e) { transactions = []; }
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions)); } catch(e) {}
+    try { localStorage.setItem(BUDGET_KEY, String(monthlyBudget)); } catch(e) {}
+  }
+
+  // ============ SANA ============
+  function ymd(ts) {
+    var d = new Date(ts);
+    return {
+      y: d.getFullYear(), m: d.getMonth(), d: d.getDate(),
+      key: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'),
+      mk: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0')
+    };
+  }
+
+  function startOfWeek(ts) {
+    var d = new Date(ts);
+    d.setHours(0,0,0,0);
+    var diff = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - diff);
+    return d.getTime();
+  }
+
+  function getPeriodRange() {
+    var now = new Date();
+    if (currentPeriod === 'day') {
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      return { from: today, to: today + 86400000 };
+    }
+    if (currentPeriod === 'week') {
+      var from = startOfWeek(now.getTime());
+      return { from: from, to: from + 7*86400000 };
+    }
+    if (currentPeriod === 'month' && selectedMonth) {
+      var parts = selectedMonth.split('-');
+      var y = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10);
+      return { from: new Date(y, m-1, 1).getTime(), to: new Date(y, m, 1).getTime() };
+    }
+    if (currentPeriod === 'year' && selectedYear) {
+      return { from: new Date(selectedYear, 0, 1).getTime(), to: new Date(selectedYear+1, 0, 1).getTime() };
+    }
+    return { from: -Infinity, to: Infinity };
+  }
+
+  function inPeriod(ts) {
+    var r = getPeriodRange();
+    return ts >= r.from && ts < r.to;
+  }
+
+  // ============ SUB FILTER ============
+  function buildSubFilter() {
+    var wrap = $('subFilter');
+    wrap.innerHTML = '';
+    if (currentPeriod === 'all') return;
+
+    if (currentPeriod === 'day') {
+      var d = new Date();
+      wrap.innerHTML = '<div class="period-label">📅 Bugun: <b style="color:var(--text)">' + d.getDate() + ' ' + monthNames[d.getMonth()] + ' ' + d.getFullYear() + '</b></div>';
+      return;
+    }
+
+    if (currentPeriod === 'week') {
+      var fromW = startOfWeek(Date.now());
+      var toW = fromW + 6*86400000;
+      var fW = new Date(fromW), tW = new Date(toW);
+      wrap.innerHTML = '<div class="period-label">🗓 <b style="color:var(--text)">' + fW.getDate() + '-' + tW.getDate() + ' ' + monthNames[tW.getMonth()] + ' ' + tW.getFullYear() + '</b></div>';
+      return;
+    }
+
+    if (currentPeriod === 'month') {
+      var monthSel = document.createElement('select');
+      monthNames.forEach(function(name, idx) {
+        var opt = document.createElement('option');
+        opt.value = idx + 1;
+        opt.textContent = name;
+        var curM = parseInt(selectedMonth.split('-')[1], 10);
+        if (curM === idx + 1) opt.selected = true;
+        monthSel.appendChild(opt);
+      });
+      monthSel.addEventListener('change', function() {
+        var y = selectedMonth.split('-')[0];
+        selectedMonth = y + '-' + String(monthSel.value).padStart(2,'0');
+        render();
+      });
+
+      var yearSel = document.createElement('select');
+      availableYears().forEach(function(y) {
+        var opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        if (String(selectedYear) === String(y)) opt.selected = true;
+        yearSel.appendChild(opt);
+      });
+      yearSel.addEventListener('change', function() {
+        selectedYear = parseInt(yearSel.value, 10);
+        var m = selectedMonth.split('-')[1];
+        selectedMonth = selectedYear + '-' + m;
+        render();
+      });
+
+      wrap.appendChild(monthSel);
+      wrap.appendChild(yearSel);
+
+      var cnt = transactions.filter(function(t) { return ymd(t.date).mk === selectedMonth; }).length;
+      var lbl = document.createElement('div');
+      lbl.className = 'period-label';
+      lbl.innerHTML = '📆 <b style="color:var(--text)">' + cnt + ' ta tranzaksiya</b>';
+      wrap.appendChild(lbl);
+      return;
+    }
+
+    if (currentPeriod === 'year') {
+      var yearSel2 = document.createElement('select');
+      availableYears().forEach(function(y) {
+        var opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        if (String(selectedYear) === String(y)) opt.selected = true;
+        yearSel2.appendChild(opt);
+      });
+      yearSel2.addEventListener('change', function() {
+        selectedYear = parseInt(yearSel2.value, 10);
+        render();
+      });
+      wrap.appendChild(yearSel2);
+
+      var y2 = selectedYear;
+      var monthly = [0,0,0,0,0,0,0,0,0,0,0,0];
+      transactions.forEach(function(t) {
+        var d2 = new Date(t.date);
+        if (d2.getFullYear() === y2 && t.type === 'expense') monthly[d2.getMonth()] += t.amount;
+      });
+      var max = Math.max.apply(null, monthly.concat([1]));
+      var chart = document.createElement('div');
+      chart.style.cssText = 'display:flex;gap:4px;align-items:flex-end;height:40px;flex:1;min-width:200px;';
+      monthly.forEach(function(v, i) {
+        var bar = document.createElement('div');
+        bar.style.cssText = 'flex:1;background:' + (v>0 ? 'linear-gradient(180deg,var(--red),var(--accent))' : '#0f1a2e') + ';border-radius:4px;height:' + Math.max((v/max)*100, 4) + '%;transition:.5s;';
+        bar.title = monthNames[i] + ': ' + fmtAmount(v);
+        chart.appendChild(bar);
+      });
+      wrap.appendChild(chart);
+    }
+  }
+
+  function availableYears() {
+    var set = {};
+    set[new Date().getFullYear()] = true;
+    transactions.forEach(function(t) { set[new Date(t.date).getFullYear()] = true; });
+    return Object.keys(set).map(Number).sort(function(a,b) { return b - a; });
+  }
+
+  // ============ TOAST ============
+  var toastTimer = null;
+  function toast(msg, type) {
+    type = type || 'success';
+    var t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.className = 'toast ' + type; }, 2500);
+  }
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // ============ BYUDJET ============
+  function renderBudget(periodExpense) {
+    var info = $('budgetInfo');
+    var bar = $('budgetBar');
+    if (monthlyBudget <= 0) {
+      info.innerHTML = '<span>Oylik limit belgilanmagan</span>';
+      bar.style.width = '0%';
+      return;
+    }
+
+    // Joriy oy chiqimi
+    var now = new Date();
+    var currentMK = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    var monthExpense = 0;
+    transactions.forEach(function(t) {
+      if (t.type === 'expense' && ymd(t.date).mk === currentMK) monthExpense += t.amount;
+    });
+
+    var remaining = monthlyBudget - monthExpense;
+    var pct = Math.min(100, (monthExpense / monthlyBudget) * 100);
+
+    info.innerHTML =
+      '<span>Limit: <b>' + fmtAmount(monthlyBudget) + '</b></span>' +
+      '<span>Sarflandi: <b style="color:var(--red)">' + fmtAmount(monthExpense) + '</b></span>' +
+      '<span>Qoldi: <b style="color:' + (remaining >= 0 ? 'var(--green)' : 'var(--red)') + '">' + fmtAmount(remaining) + '</b></span>';
+
+    bar.style.width = pct + '%';
+    bar.style.background = pct > 90 ? 'var(--red)' : (pct > 70 ? '#f59e0b' : 'linear-gradient(90deg,var(--green),var(--blue))');
+  }
+
+  // ============ RENDER ============
+  function render() {
+    buildSubFilter();
+
+    var periodFiltered = transactions.filter(function(t) { return inPeriod(t.date); });
+
+    var income = 0, expense = 0;
+    periodFiltered.forEach(function(t) {
+      if (t.type === 'income') income += t.amount;
+      else if (t.type === 'expense') expense += t.amount;
+    });
+
+    $('totalIncome').textContent = fmtAmount(income);
+    $('totalExpense').textContent = fmtAmount(expense);
+    $('balance').textContent = fmtAmount(income - expense);
+
+    renderBudget(expense);
+
+    var filtered = periodFiltered;
+    if (currentFilter !== 'all') {
+      filtered = filtered.filter(function(t) { return t.type === currentFilter; });
+    }
+
+    var list = $('list');
+    list.innerHTML = '';
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="empty"><span class="emoji">📭</span>Bu davrda tranzaksiya yo\'q</div>';
+      $('count').textContent = '0 ta';
+      renderStats(periodFiltered);
+      return;
+    }
+
+    var sorted = filtered.slice().sort(function(a,b) { return b.date - a.date; });
+    var groups = {};
+    sorted.forEach(function(t) {
+      var k = ymd(t.date).key;
+      if (!groups[k]) groups[k] = [];
+      groups[k].push(t);
+    });
+
+    var todayKey = ymd(Date.now()).key;
+    var yestKey = ymd(Date.now() - 86400000).key;
+
+    Object.keys(groups).forEach(function(key) {
+      var items = groups[key];
+      var group = document.createElement('div');
+      group.className = 'day-group';
+
+      var dayIncome = 0, dayExpense = 0;
+      items.forEach(function(t) {
+        if (t.type === 'income') dayIncome += t.amount;
+        else dayExpense += t.amount;
+      });
+
+      var parts = key.split('-');
+      var yy = parseInt(parts[0], 10);
+      var mm = parseInt(parts[1], 10);
+      var dd = parseInt(parts[2], 10);
+      var label;
+      if (key === todayKey) label = 'Bugun';
+      else if (key === yestKey) label = 'Kecha';
+      else label = dd + ' ' + monthNames[mm-1] + ' ' + yy;
+
+      var header = document.createElement('div');
+      header.className = 'day-header';
+      var sumHtml = '';
+      if (dayIncome > 0) sumHtml += '<span style="color:var(--green)">+' + fmtAmount(dayIncome) + '</span>';
+      if (dayIncome > 0 && dayExpense > 0) sumHtml += ' · ';
+      if (dayExpense > 0) sumHtml += '<span style="color:var(--red)">−' + fmtAmount(dayExpense) + '</span>';
+      header.innerHTML = '<span>' + label + '</span><span class="sum">' + sumHtml + '</span>';
+      group.appendChild(header);
+
+      items.forEach(function(t, i) {
+        var div = document.createElement('div');
+        div.className = 'transaction ' + t.type;
+        div.style.animationDelay = (i * 0.04) + 's';
+        div.innerHTML =
+          '<div class="icon">' + (icons[t.category] || '📦') + '</div>' +
+          '<div class="info">' +
+            '<div class="cat">' + t.category + '</div>' +
+            '<div class="desc">' + (t.desc ? escapeHtml(t.desc) : '—') + '</div>' +
+          '</div>' +
+          '<div class="amount ' + t.type + '">' + (t.type === 'income' ? '+' : '−') + fmtAmount(t.amount) + '</div>' +
+          '<button class="del-btn" data-id="' + t.id + '" title="O\'chirish">✕</button>';
+        group.appendChild(div);
+      });
+
+      list.appendChild(group);
+    });
+
+    $('count').textContent = filtered.length + ' ta';
+    list.querySelectorAll('.del-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { removeTransaction(btn.dataset.id); });
+    });
+
+    renderStats(periodFiltered);
+  }
+
+  function removeTransaction(id) {
+    transactions = transactions.filter(function(t) { return t.id !== id; });
+    save();
+    render();
+    toast('🗑 O\'chirildi', 'success');
+  }
+
+  function addTransaction() {
+    var amount = parseFloat($('amount').value);
+    var category = $('category').value;
+    var desc = $('desc').value.trim();
+    var dateVal = $('date').value;
+
+    if (!amount || amount <= 0) {
+      toast('Iltimos, to\'g\'ri summa kiriting!', 'error');
+      $('amount').focus();
+      return;
+    }
+
+    var amountUzs = amount;
+    if (displayCurrency === 'USD' && usdRate) amountUzs = amount * usdRate;
+
+    var ts = dateVal ? new Date(dateVal + 'T12:00:00').getTime() : Date.now();
+
+    transactions.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      amount: amountUzs,
+      category: category,
+      desc: desc,
+      type: currentType,
+      date: ts
+    });
+    save();
+    render();
+
+    $('amount').value = '';
+    $('desc').value = '';
+    $('amount').focus();
+    toast(currentType === 'income' ? '✅ Kirim qo\'shildi' : '✅ Chiqim qo\'shildi', 'success');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var d = new Date();
+    $('date').value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+
+    $('currencyToggle').addEventListener('click', function(e) {
+      var btn = e.target.closest('button[data-cur]');
+      if (!btn) return;
+      displayCurrency = btn.dataset.cur;
+      $('currencyToggle').querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      render();
+    });
+
+    $('periodTabs').addEventListener('click', function(e) {
+      var btn = e.target.closest('.period-tab');
+      if (!btn) return;
+      currentPeriod = btn.dataset.period;
+      $('periodTabs').querySelectorAll('.period-tab').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      render();
+    });
+
+    $('typeToggle').addEventListener('click', function(e) {
+      var btn = e.target.closest('button[data-type]');
+      if (!btn) return;
+      currentType = btn.dataset.type;
+      $('typeToggle').querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      btn.classList.add(currentType);
+    });
+
+    $('typeFilters').addEventListener('click', function(e) {
+      var btn = e.target.closest('.filter-chip');
+      if (!btn) return;
+      currentFilter = btn.dataset.filter;
+      $('typeFilters').querySelectorAll('.filter-chip').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      render();
+    });
+
+    $('addBtn').addEventListener('click', addTransaction);
+    $('amount').addEventListener('keydown', function(e) { if (e.key === 'Enter') addTransaction(); });
+    $('desc').addEventListener('keydown', function(e) { if (e.key === 'Enter') addTransaction(); });
+
+    $('budgetSaveBtn').addEventListener('click', function() {
+      var val = parseFloat($('budgetInput').value);
+      if (isNaN(val) || val < 0) { toast('Noto\'g\'ri qiymat', 'error'); return; }
+      monthlyBudget = val;
+      save();
+      render();
+      toast('✅ Byudjet saqlandi', 'success');
+    });
+
+    $('resetBtn').addEventListener('click', function() {
+      if (transactions.length === 0) { toast('Ro\'yxat bo\'sh', 'error'); return; }
+      if (confirm('Barcha tranzaksiyalarni o\'chirmoqchimisiz?')) {
+        transactions = [];
+        save();
+        render();
+        toast('🗑 Hammasi tozalandi', 'success');
+      }
+    });
+
+    $('rateInfo').addEventListener('click', fetchRate);
+
+    if (!selectedMonth) {
+      var n = new Date();
+      selectedMonth = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0');
+      selectedYear = n.getFullYear();
+    }
+
+    load();
+    updateRateInfo();
+    fetchRate();
+    render();
+    setInterval(fetchRate, 3600000);
+  });
+})();
+</script>
+</body>
+</html>
